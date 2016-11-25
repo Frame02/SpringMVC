@@ -14,25 +14,72 @@ public class CustomerController {
 
     private CustomerService customerService;
 
+    /**
+     * Gets the list of customers and sends it for display
+     * @param model
+     * @return
+     */
     @RequestMapping("/customers")
     public String listCustomers(Model model) {
         model.addAttribute("customers", customerService.customers());
         return "customers";
     }
 
+    /**
+     * Gets the details of a specific customer
+     * @param id
+     * @param model
+     * @return
+     */
     @RequestMapping(value = "/customer/{id}", method = RequestMethod.GET)
     public String getCustomerDetails(@PathVariable Integer id, Model model){
         model.addAttribute("customer", customerService.getCustomerById(id));
         return "customer";
     }
 
+    /**
+     * Creates a new Customer
+     * @param model
+     * @return
+     */
+    @RequestMapping("/customer/new")
+    public String createCustomer(Model model){
+        model.addAttribute("Title", "Create New Customer");
+        model.addAttribute("customer", new Customer());
+        return "customerForm";
+    }
+
+    /**
+     * Updates / edits an existing customer
+     * @param id
+     * @param model
+     * @return
+     */
+    @RequestMapping("/customer/edit/{id}")
+    public String updateCustomer(@PathVariable Integer id, Model model){
+        model.addAttribute("Title", "Edit Customer Details");
+        model.addAttribute("customer", customerService.getCustomerById(id));
+        return "customerForm";
+    }
+
+    /**
+     * Handles the data of form post, creates / updates a customer, and displays the updated list of customers
+     * @param id
+     * @param customer
+     * @return
+     */
     @RequestMapping(value = "/customer/{id}", method = RequestMethod.POST)
-    public String createOrUpdateCustomer(@PathVariable Integer id, Customer customer) {
+    public String createOrUpdateCustomer(Customer customer) {
         customerService.saveOrUpdate(customer);
         return "redirect:/customers";
     }
 
 
+    /**
+     * Deletes an existing customer and displays the updated list of customers
+     * @param id
+     * @return
+     */
     @RequestMapping("/customer/delete/{id}")
     public String deleteCustomer(@PathVariable Integer id) {
         customerService.delete(id);
